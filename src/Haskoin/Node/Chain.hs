@@ -268,6 +268,22 @@ processHeaders p hs = do
     pbest <- withBlockHeaders getBestBlockHeader
     importHeaders net now hs >>= \case
         Left e -> do
+            case e of 
+              PeerMisbehaving s ->  $(logErrorS) "Chain"  "peer misbehaving"
+              DuplicateVersion -> $(logErrorS) "Chain" "DuplicateVersion"
+              DecodeHeaderError -> $(logErrorS) "Chain" "DecodeHeaderError"
+              CannotDecodePayload mc -> $(logErrorS) "Chain" "CannotDecodePayload"
+              PeerIsMyself -> $(logErrorS) "Chain"  "PeerIsMyself"
+              PayloadTooLarge wo -> $(logErrorS) "Chain"  "PayloadTooLarge"
+              PeerAddressInvalid -> $(logErrorS) "Chain"  "PeerAddressInvalid"
+              PeerSentBadHeaders -> $(logErrorS) "Chain"  "PeerSentBadHeaders"
+              NotNetworkPeer -> $(logErrorS) "Chain"  "NotNetworkPeer"
+              PeerNoSegWit -> $(logErrorS) "Chain"  "PeerNoSegWit"
+              PeerTimeout -> $(logErrorS) "Chain"  "PeerTimeout"
+              UnknownPeer -> $(logErrorS) "Chain"  "UnknownPeer"
+              PeerTooOld -> $(logErrorS) "Chain"  "PeerTooOld"
+              EmptyHeader -> $(logErrorS) "Chain"  "EmptyHeader"
+                
             $(logErrorS) "Chain" $
                 "Could not connect headers from peer: "
                 <> peerText p
