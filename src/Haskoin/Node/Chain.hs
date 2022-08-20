@@ -445,20 +445,27 @@ importHeaders net now hs =
     runExceptT $
     lift connect >>= \case
         Right _ -> do
+            $(logDebugS) "Chain" "here 1"
             case hs of
                 [] -> return ()
                 _ -> do
+                    $(logDebugS) "Chain" "here 2"
                     bb <- lift get_last
+                    $(logDebugS) "Chain" "here 3"
                     box <- asks chainState
+                    $(logDebugS) "Chain" "here 4"
                     atomically . modifyTVar box $ \s ->
                         s { chainSyncing =
                             (\x -> x {chainHighest = bb})
                             <$> chainSyncing s
                           }
+                    $(logDebugS) "Chain" "here 5"
             case length hs of
                 2000 -> return False
                 _    -> return True
-        Left _ -> throwError PeerSentBadHeaders
+        Left e -> do           
+            throwError PeerSentBadHeaders
+            
   where
     timestamp = floor (utcTimeToPOSIXSeconds now)
     connect = withBlockHeaders $ connectBlocks net timestamp hs
